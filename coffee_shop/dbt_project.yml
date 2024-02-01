@@ -35,3 +35,6 @@ models:
       +materialized: table
       +contract:
         enforced: true
+    marts:
+      +schema: marts
+      +materialized: view

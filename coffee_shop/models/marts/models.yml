@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: question_1
+    description: View result for question number 1
+  - name: question_2
+    description: View result for question number 2
+  - name: question_3
+    description: View result for question number 3
+  - name: question_4
+    description: View result for question number 4
+  - name: question_5
+    description: View result for question number 5
