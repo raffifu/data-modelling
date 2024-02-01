@@ -1,0 +1,237 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: Table dimension customer
+    constraints:
+      - type: primary_key
+        columns: [customer_id]
+    columns:
+      - name: customer_id
+        data_type: int
+      - name: home_store
+        data_type: int
+      - name: customer_firstname
+        data_type: string
+      - name: customer_email
+        data_type: string
+      - name: customer_since
+        data_type: date
+      - name: loyalty_card_number
+        data_type: varchar(12)
+      - name: birthdate
+        data_type: date
+      - name: gender
+        data_type: string
+      - name: birth_year
+        data_type: smallint
+      - name: generation
+        data_type: string
+  - name: dim_date
+    description: Table dimension date
+    constraints:
+      - type: primary_key
+        columns: [date_id]
+    columns:
+      - name: date_id
+        data_type: int
+      - name: transaction_date
+        data_type: date
+      - name: week_id
+        data_type: smallint
+      - name: week_desc
+        data_type: string
+      - name: month_id
+        data_type: smallint
+      - name: month_name
+        data_type: string
+      - name: quarter_id
+        data_type: smallint
+      - name: quarter_name
+        data_type: varchar(2)
+      - name: year_id
+        data_type: smallint
+  - name: dim_product
+    description: Table dimension product
+    constraints:
+      - type: primary_key
+        columns: [product_id]
+    columns:
+      - name: product_id
+        data_type: int
+      - name: product_group
+        data_type: string
+      - name: product_category
+        data_type: string
+      - name: product_type
+        data_type: string
+      - name: product
+        data_type: string
+      - name: product_description
+        data_type: string
+      - name: unit_of_measure
+        data_type: string
+      - name: current_wholesale_price
+        data_type: float
+      - name: current_retail_price
+        data_type: float
+      - name: tax_exempt_yn
+        data_type: string
+      - name: promo_yn
+        data_type: string
+      - name: new_product_yn
+        data_type: string
+  - name: dim_sales_outlet
+    description: Table dimension sales_outlet
+    constraints:
+      - type: primary_key
+        columns: [sales_outlet_id]
+    columns:
+      - name: sales_outlet_id
+        data_type: int
+      - name: sales_outlet_type
+        data_type: string
+      - name: store_square_feet
+        data_type: int
+      - name: store_address
+        data_type: string
+      - name: store_city
+        data_type: string
+      - name: store_state_province
+        data_type: varchar(2)
+      - name: store_telephone
+        data_type: varchar(12)
+      - name: store_postal_code
+        data_type: smallint
+      - name: store_longitude
+        data_type: float
+      - name: store_latitude
+        data_type: float
+      - name: neighorhood
+        data_type: text
+  - name: dim_staff
+    description: Table dimension staff
+    constraints:
+      - type: primary_key
+        columns: [staff_id]
+    columns:
+      - name: staff_id
+        data_type: int
+      - name: first_name
+        data_type: string
+      - name: last_name
+        data_type: string
+      - name: position
+        data_type: string
+      - name: start_date
+        data_type: date
+      - name: location
+        data_type: string
+  - name: fact_sales_receipt
+    description: Table fact sales_receipt
+    constraints:
+      - type: primary_key
+        columns: [transaction_id]
+    columns:
+      - name: transaction_id
+        data_type: int
+      - name: date_id
+        data_type: int
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_date (date_id)
+      - name: staff_id
+        data_type: int
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_staff (staff_id)
+      - name: sales_outlet_id
+        data_type: int
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_sales_outlet (sales_outlet_id)
+      - name: customer_id
+        data_type: int
+      - name: product_id
+        data_type: int
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_product (product_id)
+      - name: transaction_time
+        data_type: time
+      - name: quantity
+        data_type: smallint
+      - name: line_item_amount
+        data_type: float
+      - name: unit_price
+        data_type: float
+      - name: promo_item_yn
+        data_type: text
+      - name: instore_yn
+        data_type: text
+  - name: fact_sales_target
+    description: Table fact sales_target
+    constraints:
+      - type: primary_key
+        columns: [sales_target_id]
+    columns:
+      - name: sales_target_id
+        data_type: int
+      - name: sales_outlet_id
+        data_type: int
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_sales_outlet (sales_outlet_id)
+      - name: year_month
+        data_type: string
+      - name: beans_goal
+        data_type: smallint
+      - name: beverage_goal
+        data_type: smallint
+      - name: food_goal
+        data_type: smallint
+      - name: merchandise_goal
+        data_type: smallint
+      - name: total_goal
+        data_type: smallint
+  - name: fact_manager
+    description: Table fact manager
+    columns:
+      - name: staff_id
+        data_type: integer
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_staff (staff_id)
+      - name: sales_outlet_id
+        data_type: integer
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_sales_outlet (sales_outlet_id)
+  - name: fact_pastry_inventory
+    description: Table fact pastry_inventory
+    columns:
+      - name: pastry_inventory_id
+        data_type: int
+      - name: sales_outlet_id
+        data_type: int
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_sales_outlet (sales_outlet_id)
+      - name: date_id
+        data_type: int
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_date (date_id)
+      - name: product_id
+        data_type: int
+        constraints:
+          - type: foreign_key
+            expression: dbt_warehouse.dim_product (product_id)
+      - name: start_of_day
+        data_type: smallint
+      - name: quantity_sold
+        data_type: smallint
+      - name: waste
+        data_type: smallint
+      - name: percent_waste
+        data_type: smallint

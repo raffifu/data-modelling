@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: raw_data
+    schema: raw_data
+    tables:
+      - name: customer
+      - name: product
+      - name: sales_outlet
+      - name: staff
+      - name: sales_receipt
+      - name: sales_target
+      - name: pastry_inventory
